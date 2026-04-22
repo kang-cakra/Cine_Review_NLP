@@ -16,6 +16,51 @@ MODEL_DIR = os.path.join(BASE_DIR, "models")
 sentiment_model = joblib.load(os.path.join(MODEL_DIR, "sentiment_model.pkl"))
 tfidf_vectorizer = joblib.load(os.path.join(MODEL_DIR, "tfidf_vectorizer.pkl"))
 
+
+def preprocess_text(text: str) -> str:
+    """Basic text cleaning pipeline matching training preprocessing."""
+    text = text.lower()
+    text = re.sub(r"<[^>]+>", " ", text)          # strip HTML
+    text = re.sub(r"http\S+|www\S+", " ", text)   # strip URLs
+    text = re.sub(r"[^a-z\s]", " ", text)          # remove non-alpha
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
+
+def get_sentiment(text: str):
+    """Predict sentiment using the loaded model."""
+    cleaned = preprocess_text(text)
+    vectorized = tfidf_vectorizer.transform([cleaned])
+    prediction = sentiment_model.predict(vectorized)[0]
+    prob = sentiment_model.predict_proba(vectorized)[0]
+    confidence = max(prob)
+    return "Positif" if prediction == 1 else "Negatif", round(confidence * 100, 1)
+
+
+# ── Review Pool ──────────────────────────────────────────────────────────────
+REVIEWS_POOL = [
+    "This movie was an absolute masterpiece! I loved every single second of it.",
+    "The acting was terrible and the plot made no sense. Avoid at all costs.",
+    "A truly heartwarming story that stayed with me for days. Must watch!",
+    "Boring, slow, and completely unnecessary. I want my money back.",
+    "One of the best films I have seen this decade. Pure brilliance.",
+    "The special effects were good, but the story was weak and predictable.",
+    "I was on the edge of my seat the whole time. Incredible tension!",
+    "Too long and definitely overhyped. I didn't find it interesting at all.",
+    "A visual spectacle with deep emotional resonance. Simply stunning.",
+    "The dialogue was cheesy and the ending was a total disappointment.",
+    "Masterful direction and an Oscar-worthy performance by the lead actor.",
+    "I couldn't even finish it. It was that bad. Waste of time.",
+    "Captivating from start to finish. A beautiful piece of cinema.",
+    "The pacing was all over the place. Some parts were okay, others were dull.",
+    "Truly inspiring and thought-provoking. Everyone should see this.",
+    "An emotional rollercoaster that I would gladly ride again. 10/10.",
+    "Poorly written and even more poorly executed. Very disappointing.",
+    "A refreshing take on the genre with unexpected twists at every corner.",
+    "The cinematography was beautiful, but it couldn't save a flat script.",
+    "I highly recommend this to anyone looking for a deep and meaningful film."
+]
+
 # ── Movie Data Bank (30 films) ────────────────────────────────────────────────
 MOVIES = [
     {
@@ -320,15 +365,21 @@ MOVIES = [
     },
 ]
 
+# ── Populate Reviews ──────────────────────────────────────────────────────────
+for movie in MOVIES:
+    # Pick 5 unique random reviews from the pool
+    texts = random.sample(REVIEWS_POOL, 5)
+    movie["reviews"] = []
+    for t in texts:
+        label, conf = get_sentiment(t)
+        movie["reviews"].append({
+            "text": t,
+            "sentiment": label,
+            "confidence": conf
+        })
 
-def preprocess_text(text: str) -> str:
-    """Basic text cleaning pipeline matching training preprocessing."""
-    text = text.lower()
-    text = re.sub(r"<[^>]+>", " ", text)          # strip HTML
-    text = re.sub(r"http\S+|www\S+", " ", text)   # strip URLs
-    text = re.sub(r"[^a-z\s]", " ", text)          # remove non-alpha
-    text = re.sub(r"\s+", " ", text).strip()
-    return text
+
+# (preprocess_text moved above get_sentiment)
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
