@@ -1,6 +1,6 @@
 # 🎬 CineReview — Movie Review & NLP Sentiment Analysis
 
-Website review film berbasis Flask yang mengintegrasikan model NLP (Logistic Regression + TF-IDF) untuk analisis sentimen review secara real-time.
+Website review film berbasis Flask yang mengintegrasikan model NLP (Naive Bayes + TF-IDF) untuk analisis sentimen review secara real-time.
 
 [![Vercel Website](https://img.shields.io/badge/Vercel-Visit%20Website-black?style=for-the-badge&logo=vercel)](https://cine-review-nlp.vercel.app/)
 
@@ -11,7 +11,7 @@ Website review film berbasis Flask yang mengintegrasikan model NLP (Logistic Reg
 - **30 Film Terkurasi** — Data bank film dengan poster, sinopsis, cast, dan rating
 - **5 Film Acak** — Setiap refresh menampilkan 5 film berbeda
 - **Analisis Sentimen Real-time** — AJAX tanpa reload halaman
-- **Model NLP** — Logistic Regression + TF-IDF terlatih pada IMDB 50K reviews
+- **Model NLP** — Naive Bayes + TF-IDF terlatih pada IMDB 50K reviews
 - **UI Premium** — Dark theme, Bootstrap 5, animasi mikro
 
 ---
@@ -26,7 +26,7 @@ web-movie-review-nlp/
 ├── .env.example            ← Template environment variables
 ├── .gitignore
 ├── models/
-│   ├── sentiment_model.pkl     ← Model Logistic Regression
+│   ├── sentiment_model.pkl     ← Model Naive Bayes
 │   └── tfidf_vectorizer.pkl    ← TF-IDF Vectorizer
 ├── templates/
 │   └── index.html
@@ -115,7 +115,7 @@ Buka browser: **http://127.0.0.1:5000**
 | Dataset | IMDB 50K Movie Reviews |
 | Preprocessing | Lowercase, hapus HTML/URL/tanda baca |
 | Vectorizer | TF-IDF (`tfidf_vectorizer.pkl`) |
-| Classifier | Logistic Regression (`sentiment_model.pkl`) |
+| Classifier | Naive Bayes (`sentiment_model.pkl`) |
 | Output | Positif / Negatif + Confidence Score |
 
 ---
