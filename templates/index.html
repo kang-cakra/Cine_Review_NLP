@@ -62,6 +62,12 @@
           <h1 class="hero-title display-3 fw-black mb-4">
             Discover & <span class="text-gradient">Analyze</span><br>Your Favorite Films
           </h1>
+          <div class="mt-2 pt-2 mb-2 pb-2 border-top border-bottom border-secondary border-opacity-10">
+            <small class="text-light fw-bold d-block">Kelompok X :</small>
+            <small class="text-light">1. Cakra Arganata (1223903)</small><br>
+            <small class="text-light">2. NAMA (NIM)</small><br>
+            <small class="text-light">3. NAMA (NIM)</small><br>
+          </div>
           <p class="hero-subtitle mb-5">
             Eksplorasi koleksi film pilihan, baca sinopsis, dan coba analisis sentimen review-mu secara real-time
             menggunakan model Machine Learning kami.
@@ -190,7 +196,7 @@
           <div class="movie-card-mini">
             <div class="mini-poster-wrap">
               <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="mini-poster"
-                 onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'220\' viewBox=\'0 0 150 220\'><rect width=\'150\' height=\'220\' fill=\'%231a1a2e\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23e94560\' font-family=\'sans-serif\' font-size=\'12\'>Poster</text></svg>'" />
+                onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'220\' viewBox=\'0 0 150 220\'><rect width=\'150\' height=\'220\' fill=\'%231a1a2e\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23e94560\' font-family=\'sans-serif\' font-size=\'12\'>Poster</text></svg>'" />
               <div class="mini-overlay">
                 <div class="mini-rating"><i class="bi bi-star-fill"></i> {{ movie.rating }}</div>
                 <button class="mini-review-btn" onclick="useMovieForReview('{{ movie.title }}')">
@@ -380,10 +386,6 @@
         <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
           <div class="brand-text fs-5"><span>Cine</span><span class="brand-accent">Review</span></div>
           <small class="text-muted d-block mb-1">Movie Review & NLP Sentiment Analysis Platform</small>
-          <div class="mt-2 pt-2 border-top border-secondary border-opacity-10">
-            <small class="text-light fw-bold d-block">Kelompok X :</small>
-            <small class="text-muted">1. Cakra Arganata (1223903)</small>
-          </div>
         </div>
         <div class="col-md-6 text-center text-md-end">
           <small class="text-muted">
