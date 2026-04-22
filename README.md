@@ -41,6 +41,7 @@ web-movie-review-nlp/
 
 ### 1. Clone / masuk ke folder project
 ```bash
+git clone https://github.com/kang-cakra/Cine_Review_NLP.git
 cd web-movie-review-nlp
 ```
 
