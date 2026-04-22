@@ -148,13 +148,13 @@
 
               <!-- ── Recent Reviews Section ── -->
               <div class="mt-4 pt-3 border-top border-secondary border-opacity-10">
-                <h6 class="text-light fs-7 mb-3 opacity-75 d-flex align-items-center">
+                <h6 class="text-light fs-7 mb-3 d-flex align-items-center">
                   <i class="bi bi-chat-left-text me-2 text-accent"></i>Recent Reviews (NLP Sample):
                 </h6>
                 <div class="review-list">
                   {% for review in movie.reviews %}
                   <div class="review-item d-flex justify-content-between align-items-start mb-3">
-                    <small class="text-muted pe-3 lh-sm" style="font-style: italic; font-size: 0.78rem;">
+                    <small class="text-light pe-3 lh-sm" style="font-style: italic; font-size: 0.78rem; opacity: 0.9;">
                       "{{ review.text }}"
                     </small>
                     <span class="badge {% if review.sentiment == 'Positif' %}bg-success-subtle text-success{% else %}bg-danger-subtle text-danger{% endif %} rounded-pill py-1 px-2 border {% if review.sentiment == 'Positif' %}border-success{% else %}border-danger{% endif %} border-opacity-25" 
