@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="CineReview — Temukan film terbaik dan analisis sentimen review Anda secara real-time dengan teknologi NLP." />
+  <title>CineReview — Movie Review & Sentiment Analysis</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════ NAVBAR ═══════════════════════════════════ -->
+  <nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <div class="brand-icon"><i class="bi bi-film"></i></div>
+        <span class="brand-text">Cine<span class="brand-accent">Review</span></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent">
+        <i class="bi bi-list text-white fs-4"></i>
+      </button>
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav ms-auto align-items-center gap-2">
+          <li class="nav-item"><a class="nav-link active" href="#featured">Featured</a></li>
+          <li class="nav-item"><a class="nav-link" href="#all-movies">All Movies</a></li>
+          <li class="nav-item"><a class="nav-link" href="#review-section">Review</a></li>
+          <li class="nav-item">
+            <a class="btn btn-accent btn-sm px-3" href="#review-section">
+              <i class="bi bi-pencil-square me-1"></i>Write Review
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════ HERO ═════════════════════════════════════ -->
+  <section class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="container position-relative z-1 py-5">
+      <div class="row align-items-center min-vh-50 py-5">
+        <div class="col-lg-7">
+          <div class="hero-badge mb-3">
+            <i class="bi bi-cpu-fill me-2"></i>NLP Powered Sentiment Analysis
+          </div>
+          <h1 class="hero-title display-3 fw-black mb-4">
+            Discover & <span class="text-gradient">Analyze</span><br>Your Favorite Films
+          </h1>
+          <p class="hero-subtitle mb-5">
+            Eksplorasi koleksi film pilihan, baca sinopsis, dan coba analisis sentimen review-mu secara real-time
+            menggunakan model Machine Learning kami.
+          </p>
+          <div class="d-flex gap-3 flex-wrap">
+            <a href="#featured" class="btn btn-primary-custom btn-lg px-4">
+              <i class="bi bi-play-circle-fill me-2"></i>Jelajahi Film
+            </a>
+            <a href="#review-section" class="btn btn-outline-custom btn-lg px-4">
+              <i class="bi bi-robot me-2"></i>Coba NLP Analysis
+            </a>
+          </div>
+        </div>
+        <div class="col-lg-5 d-none d-lg-flex justify-content-end">
+          <div class="hero-stats">
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-collection-play"></i></div>
+              <div class="stat-value">30</div>
+              <div class="stat-label">Film Tersedia</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-graph-up-arrow"></i></div>
+              <div class="stat-value">94%</div>
+              <div class="stat-label">Akurasi Model</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon"><i class="bi bi-lightning-charge"></i></div>
+              <div class="stat-value">&lt;1s</div>
+              <div class="stat-label">Waktu Analisis</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ FEATURED (5 RANDOM) ══════════════════════ -->
+  <section class="section-dark py-5" id="featured">
+    <div class="container">
+      <div class="section-header mb-5">
+        <div class="section-badge"><i class="bi bi-shuffle me-2"></i>Random Pick</div>
+        <h2 class="section-title">Film Pilihan Hari Ini</h2>
+        <p class="section-subtitle">5 film dipilih secara acak setiap refresh halaman</p>
+        <a href="javascript:location.reload()" class="btn btn-refresh">
+          <i class="bi bi-arrow-clockwise me-2"></i>Refresh Pilihan
+        </a>
+      </div>
+
+      <div class="row g-4">
+        {% for movie in movies %}
+        <div class="col-lg-4 col-md-6 movie-fadein" data-aos="fade-up" data-delay="{{ loop.index0 * 0.1 }}">
+          <div class="movie-card" id="movie-{{ movie.id }}">
+            <div class="movie-poster-wrap">
+              <img src="{{ movie.poster }}" alt="{{ movie.title }} poster" class="movie-poster"
+                onerror="this.src='https://via.placeholder.com/300x450/1a1a2e/e94560?text=No+Image'" />
+              <div class="movie-overlay">
+                <div class="movie-genre-badge">{{ movie.genre }}</div>
+                <button class="btn-use-review" onclick="useMovieForReview('{{ movie.title }}')"
+                  title="Tulis review untuk film ini">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </div>
+              <div class="rating-badge">
+                <i class="bi bi-star-fill"></i> {{ movie.rating }}
+              </div>
+            </div>
+            <div class="movie-body">
+              <div class="movie-year">{{ movie.year }}</div>
+              <h3 class="movie-title">{{ movie.title }}</h3>
+              <p class="movie-synopsis">{{ movie.synopsis }}</p>
+              <div class="movie-cast">
+                <i class="bi bi-people-fill me-2 text-accent"></i>
+                <span>{{ movie.cast | join(', ') }}</span>
+              </div>
+              <div class="movie-rating-bar">
+                <div class="rating-fill" data-width="{{ (movie.rating / 10 * 100)|int }}"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Placeholder cards to fill the row if < 5 -->
+        {% if movies|length == 5 %}
+        <div class="col-lg-4 col-md-6">
+          <div
+            class="movie-card refresh-card d-flex flex-column align-items-center justify-content-center text-center p-5">
+            <div class="refresh-icon mb-3"><i class="bi bi-arrow-repeat"></i></div>
+            <h4 class="text-light mb-2">Ingin pilihan lain?</h4>
+            <p class="text-muted small mb-4">Klik refresh untuk mendapatkan 5 film acak yang berbeda dari bank data
+              kami.
+            </p>
+            <a href="javascript:location.reload()" class="btn btn-accent">
+              <i class="bi bi-shuffle me-2"></i>Acak Ulang
+            </a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ ALL MOVIES ════════════════════════════════ -->
+  <section class="section-darker py-5" id="all-movies">
+    <div class="container">
+      <div class="section-header mb-5">
+        <div class="section-badge"><i class="bi bi-collection-play me-2"></i>Katalog Lengkap</div>
+        <h2 class="section-title">Semua Film</h2>
+        <p class="section-subtitle">30 film terpilih dari berbagai genre dan era</p>
+      </div>
+
+      <!-- Search -->
+      <div class="row justify-content-center mb-5">
+        <div class="col-md-6">
+          <div class="search-wrapper">
+            <i class="bi bi-search search-icon"></i>
+            <input type="text" class="search-input" id="movieSearch" placeholder="Cari judul film..."
+              oninput="filterMovies(this.value)" />
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3" id="allMoviesGrid">
+        {% for movie in all_movies %}
+        <div class="col-lg-3 col-md-4 col-sm-6 movie-item" data-title="{{ movie.title | lower }}">
+          <div class="movie-card-mini">
+            <div class="mini-poster-wrap">
+              <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="mini-poster"
+                onerror="this.src='https://via.placeholder.com/150x220/1a1a2e/e94560?text={{ movie.title[:8] }}'" />
+              <div class="mini-overlay">
+                <div class="mini-rating"><i class="bi bi-star-fill"></i> {{ movie.rating }}</div>
+                <button class="mini-review-btn" onclick="useMovieForReview('{{ movie.title }}')">
+                  <i class="bi bi-pencil-square me-1"></i>Review
+                </button>
+              </div>
+            </div>
+            <div class="mini-info">
+              <div class="mini-title">{{ movie.title }}</div>
+              <div class="mini-meta">{{ movie.year }} · {{ movie.genre.split('/')[0].strip() }}</div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="text-center mt-4 d-none" id="noResults">
+        <p class="text-muted"><i class="bi bi-search me-2"></i>Tidak ada film yang cocok dengan pencarian Anda.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ REVIEW & NLP ═════════════════════════════ -->
+  <section class="section-dark py-5" id="review-section">
+    <div class="container">
+      <div class="section-header mb-5">
+        <div class="section-badge"><i class="bi bi-robot me-2"></i>Powered by Machine Learning</div>
+        <h2 class="section-title">Analisis Sentimen Review</h2>
+        <p class="section-subtitle">Masukkan review film Anda dalam bahasa Inggris dan biarkan AI menentukan sentimennya
+          secara real-time</p>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <div class="nlp-card">
+            <!-- Film Selector -->
+            <div class="mb-4">
+              <label class="form-label-custom" for="movieSelector">
+                <i class="bi bi-film me-2"></i>Pilih Film (Opsional)
+              </label>
+              <select class="form-select-custom" id="movieSelector" onchange="setMovieTitle(this.value)">
+                <option value="">— Pilih film dari daftar —</option>
+                {% for movie in all_movies %}
+                <option value="{{ movie.title }}">{{ movie.title }} ({{ movie.year }})</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Selected Movie Display -->
+            <div id="selectedMovieInfo" class="selected-movie-banner d-none mb-4">
+              <i class="bi bi-check-circle-fill me-2 text-accent"></i>
+              <span id="selectedMovieTitle"></span>
+            </div>
+
+            <!-- Review Textarea -->
+            <div class="mb-4">
+              <label class="form-label-custom" for="reviewInput">
+                <i class="bi bi-chat-quote me-2"></i>Tulis Review Anda
+              </label>
+              <textarea id="reviewInput" class="review-textarea" rows="6" maxlength="2000"
+                placeholder="Contoh: This movie was absolutely amazing! The plot was gripping and the performances were outstanding. I highly recommend it to everyone who loves great storytelling..."
+                oninput="updateCharCount(this)"></textarea>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <small class="text-muted"><i class="bi bi-info-circle me-1"></i>Gunakan bahasa Inggris untuk hasil
+                  terbaik</small>
+                <small class="char-count" id="charCount">0 / 2000</small>
+              </div>
+            </div>
+
+            <!-- Example Review Pills -->
+            <div class="mb-4">
+              <small class="text-muted d-block mb-2">Contoh review cepat:</small>
+              <div class="d-flex flex-wrap gap-2">
+                <button class="example-pill positive-pill" onclick="setExample('positive')">
+                  <i class="bi bi-emoji-smile me-1"></i>Positif
+                </button>
+                <button class="example-pill negative-pill" onclick="setExample('negative')">
+                  <i class="bi bi-emoji-frown me-1"></i>Negatif
+                </button>
+                <button class="example-pill neutral-pill" onclick="clearReview()">
+                  <i class="bi bi-x-circle me-1"></i>Bersihkan
+                </button>
+              </div>
+            </div>
+
+            <!-- Analyze Button -->
+            <button id="analyzeBtn" class="btn-analyze w-100 mb-4" onclick="analyzeSentiment()">
+              <span class="btn-analyze-inner">
+                <i class="bi bi-cpu-fill me-2"></i>Analisis Sentimen Sekarang
+              </span>
+            </button>
+
+            <!-- Result Panel -->
+            <div id="resultPanel" class="result-panel d-none">
+              <div class="result-inner">
+                <div class="result-header">
+                  <div class="result-icon" id="resultIcon"></div>
+                  <div>
+                    <div class="result-label" id="resultLabel"></div>
+                    <div class="result-movie" id="resultMovie"></div>
+                  </div>
+                </div>
+                <div class="confidence-section mt-4">
+                  <div class="d-flex justify-content-between mb-2">
+                    <small class="text-muted">Confidence Score</small>
+                    <small class="confidence-value" id="confidenceValue"></small>
+                  </div>
+                  <div class="confidence-bar">
+                    <div class="confidence-fill" id="confidenceFill"></div>
+                  </div>
+                </div>
+                <div class="result-meta mt-3">
+                  <span class="meta-chip"><i class="bi bi-chat-dots me-1"></i><span id="wordCount">0</span> kata</span>
+                  <span class="meta-chip"><i class="bi bi-clock me-1"></i><span id="analysisTime">0ms</span></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="errorAlert" class="error-alert d-none">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <span id="errorMsg"></span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ HOW IT WORKS ═════════════════════════════ -->
+  <section class="section-darker py-5">
+    <div class="container">
+      <div class="section-header mb-5">
+        <div class="section-badge"><i class="bi bi-gear me-2"></i>Technology</div>
+        <h2 class="section-title">Bagaimana Model Bekerja?</h2>
+      </div>
+      <div class="row g-4 justify-content-center">
+        <div class="col-md-3">
+          <div class="how-card text-center">
+            <div class="how-number">01</div>
+            <div class="how-icon"><i class="bi bi-keyboard"></i></div>
+            <h5 class="text-light mt-3 mb-2">Input Review</h5>
+            <p class="text-muted small">Pengguna memasukkan teks review film dalam bahasa Inggris</p>
+          </div>
+        </div>
+        <div class="col-md-1 d-none d-md-flex align-items-center justify-content-center">
+          <i class="bi bi-arrow-right text-accent fs-3"></i>
+        </div>
+        <div class="col-md-3">
+          <div class="how-card text-center">
+            <div class="how-number">02</div>
+            <div class="how-icon"><i class="bi bi-funnel"></i></div>
+            <h5 class="text-light mt-3 mb-2">Preprocessing</h5>
+            <p class="text-muted small">Teks dibersihkan: lowercase, hapus tanda baca, karakter khusus</p>
+          </div>
+        </div>
+        <div class="col-md-1 d-none d-md-flex align-items-center justify-content-center">
+          <i class="bi bi-arrow-right text-accent fs-3"></i>
+        </div>
+        <div class="col-md-3">
+          <div class="how-card text-center">
+            <div class="how-number">03</div>
+            <div class="how-icon"><i class="bi bi-grid-3x3"></i></div>
+            <h5 class="text-light mt-3 mb-2">TF-IDF Vectorizer</h5>
+            <p class="text-muted small">Teks diubah menjadi vektor numerik menggunakan TF-IDF</p>
+          </div>
+        </div>
+        <div class="col-md-1 d-none d-md-flex align-items-center justify-content-center">
+          <i class="bi bi-arrow-right text-accent fs-3"></i>
+        </div>
+        <div class="col-md-3">
+          <div class="how-card text-center">
+            <div class="how-number">04</div>
+            <div class="how-icon"><i class="bi bi-bar-chart-line"></i></div>
+            <h5 class="text-light mt-3 mb-2">Prediksi Model</h5>
+            <p class="text-muted small">Logistic Regression memprediksi sentimen: Positif atau Negatif</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════ FOOTER ═══════════════════════════════════ -->
+  <footer class="footer py-4">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+          <div class="brand-text fs-5"><span>Cine</span><span class="brand-accent">Review</span></div>
+          <small class="text-muted">Movie Review & NLP Sentiment Analysis Platform</small>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <small class="text-muted">
+            <i class="bi bi-cpu me-1"></i>Model: Logistic Regression + TF-IDF &nbsp;·&nbsp;
+            <i class="bi bi-database me-1"></i>Dataset: IMDB 50K Reviews
+          </small>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
