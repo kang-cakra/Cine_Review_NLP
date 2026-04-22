@@ -333,6 +333,12 @@ def preprocess_text(text: str) -> str:
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
+@app.route("/favicon.ico")
+def favicon():
+    """Return empty 204 so browsers don't loop on a missing favicon file."""
+    return "", 204
+
+
 @app.route("/")
 def index():
     featured = random.sample(MOVIES, 5)
