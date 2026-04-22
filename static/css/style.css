@@ -417,7 +417,7 @@ body {
 .rating-badge {
   position: absolute;
   top: 12px;
-  left: 12px;
+  right: 12px;
   background: rgba(10, 10, 15, 0.8);
   color: var(--accent2);
   font-size: 0.8rem;
