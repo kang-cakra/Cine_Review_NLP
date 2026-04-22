@@ -2,7 +2,7 @@ import os
 import random
 import joblib
 import re
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 
 # ── App Setup ─────────────────────────────────────────────────────────────────
 app = Flask(__name__)
@@ -335,8 +335,11 @@ def preprocess_text(text: str) -> str:
 
 @app.route("/favicon.ico")
 def favicon():
-    """Return empty 204 so browsers don't loop on a missing favicon file."""
-    return "", 204
+    """Serve the actual favicon.ico file from the project root."""
+    return send_file(
+        os.path.join(BASE_DIR, "favicon.ico"),
+        mimetype="image/vnd.microsoft.icon"
+    )
 
 
 @app.route("/")
