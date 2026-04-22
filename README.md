@@ -2,7 +2,7 @@
 
 Website review film berbasis Flask yang mengintegrasikan model NLP (Logistic Regression + TF-IDF) untuk analisis sentimen review secara real-time.
 
-[![Vercel Website](https://vercel.com/button)](https://cine-review-djwkza4sq-kang-cakras-projects.vercel.app/)
+[![Vercel Website](https://img.shields.io/badge/Vercel-Visit%20Website-black?style=for-the-badge&logo=vercel)](https://cine-review-nlp.vercel.app/)
 
 ---
 
