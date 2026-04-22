@@ -116,7 +116,7 @@
           <div class="movie-card" id="movie-{{ movie.id }}">
             <div class="movie-poster-wrap">
               <img src="{{ movie.poster }}" alt="{{ movie.title }} poster" class="movie-poster"
-                onerror="this.src='https://via.placeholder.com/300x450/1a1a2e/e94560?text=No+Image'" />
+                onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'450\' viewBox=\'0 0 300 450\'><rect width=\'300\' height=\'450\' fill=\'%231a1a2e\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23e94560\' font-family=\'sans-serif\' font-size=\'20\'>No Image</text></svg>'" />
               <div class="movie-overlay">
                 <div class="movie-genre-badge">{{ movie.genre }}</div>
                 <button class="btn-use-review" onclick="useMovieForReview('{{ movie.title }}')"
@@ -190,7 +190,7 @@
           <div class="movie-card-mini">
             <div class="mini-poster-wrap">
               <img src="{{ movie.poster }}" alt="{{ movie.title }}" class="mini-poster"
-                onerror="this.src='https://via.placeholder.com/150x220/1a1a2e/e94560?text={{ movie.title[:8] }}'" />
+                 onerror="this.src='data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'150\' height=\'220\' viewBox=\'0 0 150 220\'><rect width=\'150\' height=\'220\' fill=\'%231a1a2e\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23e94560\' font-family=\'sans-serif\' font-size=\'12\'>Poster</text></svg>'" />
               <div class="mini-overlay">
                 <div class="mini-rating"><i class="bi bi-star-fill"></i> {{ movie.rating }}</div>
                 <button class="mini-review-btn" onclick="useMovieForReview('{{ movie.title }}')">
