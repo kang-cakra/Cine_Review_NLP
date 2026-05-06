@@ -1,43 +1,46 @@
-import os
+import os 
 import random
 import joblib
-import re
-from flask import Flask, render_template, request, jsonify, send_file
+import re 
+from flask import Flask, render_template, request, jsonify, send_file 
 
 # ── App Setup ─────────────────────────────────────────────────────────────────
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-only-fallback-key")
 
 # ── Load NLP Models ───────────────────────────────────────────────────────────
-# Models are stored in models/ inside the project root (required for Vercel)
+# Mengambil path direktori absolut dari lokasi file app.py saat ini berada
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Menggabungkan BASE_DIR dengan folder "models" untuk mendapatkan lokasi pasti folder model
 MODEL_DIR = os.path.join(BASE_DIR, "models")
 
+# Memuat model klasifikasi sentimen yang sudah dilatih dari file pickle
 sentiment_model = joblib.load(os.path.join(MODEL_DIR, "sentiment_model.pkl"))
+# Memuat model ekstraksi fitur TF-IDF dari file pickle untuk mengubah teks menjadi angka
 tfidf_vectorizer = joblib.load(os.path.join(MODEL_DIR, "tfidf_vectorizer.pkl"))
 
 
 def preprocess_text(text: str) -> str:
-    """Basic text cleaning pipeline matching training preprocessing."""
-    text = text.lower()
-    text = re.sub(r"<[^>]+>", " ", text)          # strip HTML
-    text = re.sub(r"http\S+|www\S+", " ", text)   # strip URLs
-    text = re.sub(r"[^a-z\s]", " ", text)          # remove non-alpha
-    text = re.sub(r"\s+", " ", text).strip()
+    text = text.lower()                           # Case Folding
+    text = re.sub(r"<[^>]+>", " ", text)          # Regex menghapus tag HTML dan menggantinya dengan spasi
+    text = re.sub(r"http\S+|www\S+", " ", text)   # Regex menghapus tautan/URL yang berawalan http atau www
+    text = re.sub(r"[^a-z\s]", " ", text)         # Regex menghapus semua karakter selain huruf alfabet (a-z) dan spasi (seperti angka dan tanda baca)
+    text = re.sub(r"\s+", " ", text).strip()      # Regex mengganti spasi yang berlebihan menjadi spasi tunggal, lalu menghapus spasi di awal dan akhir teks
     return text
 
 
 def get_sentiment(text: str):
-    """Predict sentiment using the loaded model."""
-    cleaned = preprocess_text(text)
-    vectorized = tfidf_vectorizer.transform([cleaned])
-    prediction = sentiment_model.predict(vectorized)[0]
-    prob = sentiment_model.predict_proba(vectorized)[0]
-    confidence = max(prob)
+    cleaned = preprocess_text(text)                               # Membersihkan teks input menggunakan fungsi preprocess_text sebelumnya
+    vectorized = tfidf_vectorizer.transform([cleaned])            # Mengubah teks bersih menjadi representasi numerik vektor TF-IDF
+    prediction = sentiment_model.predict(vectorized)[0]           # Melakukan prediksi sentimen menggunakan model yang telah dimuat
+    prob = sentiment_model.predict_proba(vectorized)[0]           # Menghitung probabilitas prediksi untuk setiap kelas (positif/negatif)
+    confidence = max(prob)                                        # Mengambil nilai probabilitas tertinggi sebagai tingkat keyakinan (confidence)
+    # Mengembalikan tuple berisi label sentimen ("Positif" atau "Negatif") dan persentase keyakinannya (dibulatkan 1 desimal)
     return "Positif" if prediction == 1 else "Negatif", round(confidence * 100, 1)
 
 
 # ── Review Pool ──────────────────────────────────────────────────────────────
+# Daftar kumpulan review tiruan berbahasa Inggris yang akan digunakan secara acak pada data film
 REVIEWS_POOL = [
     "This movie was an absolute masterpiece! I loved every single second of it.",
     "The acting was terrible and the plot made no sense. Avoid at all costs.",
@@ -62,6 +65,7 @@ REVIEWS_POOL = [
 ]
 
 # ── Movie Data Bank (30 films) ────────────────────────────────────────────────
+# Kumpulan data film (database tiruan) dalam bentuk list of dictionary, menyimpan informasi seperti ID, judul, tahun, dsb.
 MOVIES = [
     {
         "id": 1,
@@ -366,16 +370,16 @@ MOVIES = [
 ]
 
 # ── Populate Reviews ──────────────────────────────────────────────────────────
-for movie in MOVIES:
-    # Pick 5 unique random reviews from the pool
+for movie in MOVIES: # Melakukan iterasi (perulangan) pada setiap film di dalam list MOVIES
+    # Memilih 5 teks review unik secara acak dari REVIEWS_POOL
     texts = random.sample(REVIEWS_POOL, 5)
-    movie["reviews"] = []
-    for t in texts:
-        label, conf = get_sentiment(t)
-        movie["reviews"].append({
-            "text": t,
-            "sentiment": label,
-            "confidence": conf
+    movie["reviews"] = [] # Menambahkan key "reviews" dengan list kosong pada dictionary film tersebut
+    for t in texts: # Melakukan perulangan pada masing-masing teks review yang terpilih
+        label, conf = get_sentiment(t) # Memprediksi sentimen (label) dan confidence rate dari teks review tersebut
+        movie["reviews"].append({      # Menambahkan hasil analisis ke dalam list "reviews" milik film
+            "text": t,                 # Menyimpan teks review asli
+            "sentiment": label,        # Menyimpan hasil prediksi ("Positif" atau "Negatif")
+            "confidence": conf         # Menyimpan tingkat keyakinan prediksi dalam persen
         })
 
 
@@ -384,47 +388,51 @@ for movie in MOVIES:
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
-@app.route("/favicon.ico")
+@app.route("/favicon.ico") # Mendefinisikan route URL untuk meminta file ikon favicon.ico
 def favicon():
     """Serve the actual favicon.ico file from the project root."""
-    return send_file(
-        os.path.join(BASE_DIR, "favicon.ico"),
-        mimetype="image/vnd.microsoft.icon"
+    return send_file( # Mengirimkan file langsung ke browser pengguna
+        os.path.join(BASE_DIR, "favicon.ico"), # Menentukan path lengkap menuju file favicon.ico
+        mimetype="image/vnd.microsoft.icon"    # Menentukan tipe MIME dari file yang dikirim
     )
 
 
-@app.route("/")
+@app.route("/") # Mendefinisikan route untuk halaman utama (root) web
 def index():
-    featured = random.sample(MOVIES, 5)
+    featured = random.sample(MOVIES, 5) # Memilih 5 film secara acak dari database untuk dijadikan film unggulan (featured)
+    # Merender dan mengembalikan file HTML (index.html), sembari mengirim variabel movies dan all_movies ke template
     return render_template("index.html", movies=featured, all_movies=MOVIES)
 
 
-@app.route("/api/sentiment", methods=["POST"])
+@app.route("/api/sentiment", methods=["POST"]) # Mendefinisikan endpoint API untuk analisis sentimen, hanya menerima request POST
 def analyze_sentiment():
-    data = request.get_json(silent=True)
-    if not data or "review" not in data:
-        return jsonify({"error": "No review text provided."}), 400
+    data = request.get_json(silent=True) # Mengambil data format JSON dari body request tanpa memunculkan error jika format salah
+    if not data or "review" not in data: # Mengecek apakah data JSON valid dan memiliki field "review"
+        return jsonify({"error": "Tidak ada teks review yang diberikan."}), 400 # Mengembalikan respons error HTTP 400 (Bad Request) jika tidak ada
 
-    raw_text = data["review"].strip()
-    if len(raw_text) < 5:
-        return jsonify({"error": "Review text is too short."}), 400
+    raw_text = data["review"].strip() # Mengambil teks review dari data dan menghapus spasi kosong di awal/akhir
+    if len(raw_text) < 5:             # Mengecek apakah panjang teks terlalu pendek (kurang dari 5 karakter)
+        return jsonify({"error": "Teks review terlalu pendek."}), 400 # Mengembalikan pesan error HTTP 400 jika terlalu pendek
 
-    cleaned = preprocess_text(raw_text)
-    vectorized = tfidf_vectorizer.transform([cleaned])
-    prediction = sentiment_model.predict(vectorized)[0]
-    proba = sentiment_model.predict_proba(vectorized)[0]
+    cleaned = preprocess_text(raw_text)                           # Melakukan pembersihan teks pada review yang diterima
+    vectorized = tfidf_vectorizer.transform([cleaned])            # Mengubah teks yang sudah bersih menjadi matriks TF-IDF
+    prediction = sentiment_model.predict(vectorized)[0]           # Melakukan prediksi kelas dengan model klasifikasi
+    proba = sentiment_model.predict_proba(vectorized)[0]          # Menghitung probabilitas dari setiap kelas prediksi
 
+    # Menentukan label string "positive" jika hasil prediksi adalah "1" atau berbau positif, jika tidak maka "negative"
     label = "positive" if str(prediction).lower() in ("1", "positive", "pos") else "negative"
-    confidence = float(max(proba)) * 100
+    confidence = float(max(proba)) * 100                          # Mengambil persentase probabilitas paling tinggi
 
-    return jsonify({
-        "sentiment": label,
-        "confidence": round(confidence, 2),
-        "review_length": len(raw_text.split()),
+    return jsonify({                                              # Mengembalikan hasil prediksi dalam bentuk JSON
+        "sentiment": label,                                       # Mengirim label sentimen
+        "confidence": round(confidence, 2),                       # Mengirim confidence rate yang dibulatkan 2 desimal
+        "review_length": len(raw_text.split()),                   # Mengirim jumlah kata pada teks review
     })
 
 
 # ── Entry Point ───────────────────────────────────────────────────────────────
-if __name__ == "__main__":
+if __name__ == "__main__": # Memastikan bahwa baris di bawah hanya dijalankan ketika file ini dijalankan langsung (bukan diimpor)
+    # Mengecek environment variable "FLASK_DEBUG" untuk menentukan apakah mode debug aktif (default: True)
     debug_mode = os.environ.get("FLASK_DEBUG", "true").lower() == "true"
+    # Menjalankan server aplikasi web Flask dengan konfigurasi debug, pada port 5000
     app.run(debug=debug_mode, port=5000)
